@@ -19,11 +19,11 @@ const app = http.createServer((req, res) => {
 
   if (req.method === "GET") {
     const todos = readFile("todos.json");
-
     res.writeHead(200, {
       "Content-Type": "application/json",
-      data: "recived sucessfully",
+      data: "recieved sucessfully",
     });
+
     res.end(JSON.stringify(todos));
   }
   if (req.method === "GET") {
@@ -43,8 +43,11 @@ const app = http.createServer((req, res) => {
       const stringyFiedTodo = JSON.stringify(parsedTodos, null, 2);
       writeFile("todos.json", stringyFiedTodo);
     });
+    res.writeHead(201, {
+      "Content-Type": "application/json",
+      data: "posted sucessfully",
+    });
 
-    res.statusCode = 201;
     res.end();
   }
   if (req.method === "DELETE") {
@@ -57,10 +60,39 @@ const app = http.createServer((req, res) => {
     });
     const stringyFiedTodo = JSON.stringify(filteredParsedTodos, null, 2);
     writeFile("todos.json", stringyFiedTodo);
-    res.statusCode = 204;
+    res.writeHead(204, {
+      "Content-Type": "application/json",
+      data: "deleted sucessfully",
+    });
+
     res.end();
   }
   if (req.method === "PUT") {
+    const id = req.url.split("/");
+    const parsedId = JSON.parse(id[1]);
+    const todos = readFile("todos.json");
+    const parsedTodos = JSON.parse(todos);
+
+    let todo = parsedTodos.filter((todo) => {
+      return todo.id === parsedId;
+    });
+    let filteredTodos = parsedTodos.filter((todo) => {
+      return todo.id !== parsedId;
+    });
+    todo[0].done = null;
+    todo[0].name = "Madri Gale";
+    todo[0].id = Math.random(Math.floor() * 1000);
+    console.log(todo);
+    filteredTodos.push(todo[0]);
+
+    stringyFiedTodo = JSON.stringify(filteredTodos, null, 2);
+
+    writeFile("todos.json", stringyFiedTodo);
+
+    res.writeHead(204, {
+      "Content-Type": "application/json",
+      data: "updated sucessfully",
+    });
   }
   if (req.method === "PATCH") {
     const id = req.url.split("/");
@@ -82,9 +114,12 @@ const app = http.createServer((req, res) => {
 
     writeFile("todos.json", stringyFiedTodo);
 
-    console.log(filteredTodos);
+    res.writeHead(204, {
+      "Content-Type": "application/json",
+      data: "updated sucessfully",
+    });
   }
-  res.statusCode = 204;
+
   res.end();
 });
 
