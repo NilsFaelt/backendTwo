@@ -44,7 +44,15 @@ const app = http.createServer((req, res) => {
     res.end();
   }
   if (req.method === "DELETE") {
+    const id = req.url.split("/");
+    const parsedId = JSON.parse(id[1]);
     const todos = readFile("todos.json");
+    const parsedTodos = JSON.parse(todos);
+    const filteredParsedTodos = parsedTodos.filter((todo) => {
+      return todo.id !== parsedId;
+    });
+    const stringyFiedTodo = JSON.stringify(filteredParsedTodos, null, 2);
+    writeFile("todos.json", stringyFiedTodo);
   }
   if (req.method === "PUT") {
   }
