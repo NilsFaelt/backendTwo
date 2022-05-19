@@ -17,22 +17,31 @@ const app = http.createServer((req, res) => {
     res.end();
   }
 
-  if (req.method === "GET") {
+  if (req.method === "GET" && req.url.split("/")[1] === "singletodo") {
+    const id = req.url.split("/");
+    const parsedId = JSON.parse(id[3]);
     const todos = readFile("todos.json");
+    const parsedTodos = JSON.parse(todos);
+
+    const todo = parsedTodos.filter((todo) => todo.id === parsedId);
+    stringyFiedTodo = JSON.stringify(todo);
+    // res.writeHead(200, {
+    //   "Content-Type": "application/json",
+    //   data: "recieved sucessfully",
+    // });
+
+    console.log(stringyFiedTodo, "test");
+    res.end(stringyFiedTodo);
+  } else if (req.method === "GET") {
+    const todos = readFile("todos.json");
+
     res.writeHead(200, {
       "Content-Type": "application/json",
       data: "recieved sucessfully",
     });
 
     res.end(JSON.stringify(todos));
-  }
-
-  if (req.method === "GET" && req.url.split("/")[1] === "singletodo") {
-    console.log(req.url.split("/")[1]);
-
-    //   with id
-  }
-  if (req.method === "POST") {
+  } else if (req.method === "POST") {
     const todos = readFile("todos.json");
     const parsedTodos = JSON.parse(todos);
     req.on("data", (chunk) => {
@@ -52,8 +61,7 @@ const app = http.createServer((req, res) => {
     });
 
     res.end();
-  }
-  if (req.method === "DELETE") {
+  } else if (req.method === "DELETE") {
     const id = req.url.split("/");
     const parsedId = JSON.parse(id[1]);
     const todos = readFile("todos.json");
@@ -69,8 +77,7 @@ const app = http.createServer((req, res) => {
     });
 
     res.end();
-  }
-  if (req.method === "PUT") {
+  } else if (req.method === "PUT") {
     const id = req.url.split("/");
     const parsedId = JSON.parse(id[1]);
     const todos = readFile("todos.json");
@@ -96,8 +103,7 @@ const app = http.createServer((req, res) => {
       "Content-Type": "application/json",
       data: "updated sucessfully",
     });
-  }
-  if (req.method === "PATCH") {
+  } else if (req.method === "PATCH") {
     const id = req.url.split("/");
     const parsedId = JSON.parse(id[1]);
     const todos = readFile("todos.json");
