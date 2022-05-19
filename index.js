@@ -26,7 +26,10 @@ const app = http.createServer((req, res) => {
 
     res.end(JSON.stringify(todos));
   }
-  if (req.method === "GET") {
+
+  if (req.method === "GET" && req.url.split("/")[1] === "singletodo") {
+    console.log(req.url.split("/")[1]);
+
     //   with id
   }
   if (req.method === "POST") {
