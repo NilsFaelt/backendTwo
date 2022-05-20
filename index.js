@@ -18,64 +18,79 @@ const app = http.createServer((req, res) => {
   }
 
   if (req.method === "GET" && req.url.split("/")[1] === "singletodo") {
-    const id = req.url.split("/");
-    const parsedId = JSON.parse(id[2]);
-    const todos = readFile("todos.json");
-    const parsedTodos = JSON.parse(todos);
+    try {
+      const id = req.url.split("/");
+      const parsedId = JSON.parse(id[2]);
+      const todos = readFile("todos.json");
+      const parsedTodos = JSON.parse(todos);
 
-    const todo = parsedTodos.filter((todo) => todo.id === parsedId);
-    stringyFiedTodo = JSON.stringify(todo, null, 2);
-    res.writeHead(200, {
-      "Content-Type": "application/json",
-      data: "single todo recieved sucessfully",
-    });
+      const todo = parsedTodos.filter((todo) => todo.id === parsedId);
+      stringyFiedTodo = JSON.stringify(todo, null, 2);
+      res.writeHead(200, {
+        "Content-Type": "application/json",
+        data: "single todo recieved sucessfully",
+      });
 
-    res.end(stringyFiedTodo);
+      res.end(stringyFiedTodo);
+    } catch (err) {
+      console.log(`something went wrong in getsingle todo ${err}`);
+    }
   } else if (req.method === "GET") {
-    const todos = readFile("todos.json");
-    const stringyFiedTodo = JSON.stringify(todos, null, 2);
-    res.writeHead(200, {
-      "Content-Type": "application/json",
-      data: "todo recieved sucessfully",
-    });
+    try {
+      const todos = readFile("todos.json");
+      res.writeHead(200, {
+        "Content-Type": "application/json",
+        data: "todo recieved sucessfully",
+      });
 
-    res.end(todos);
+      res.end(JSON.stringify(todos, null, 2));
+    } catch (err) {
+      console.log(`something went wrong in get todo ${err}`);
+    }
   } else if (req.method === "POST") {
-    const todos = readFile("todos.json");
-    const parsedTodos = JSON.parse(todos);
-    req.on("data", (chunk) => {
-      const data = JSON.parse(chunk);
-      const todo = {
-        name: data,
-        id: Math.random(Math.floor() * 1000),
-        done: false,
-      };
-      parsedTodos.push(todo);
-      const stringyFiedTodo = JSON.stringify(parsedTodos, null, 2);
-      writeFile("todos.json", stringyFiedTodo);
-    });
-    res.writeHead(201, {
-      "Content-Type": "application/json",
-      data: "posted sucessfully",
-    });
+    try {
+      const todos = readFile("todos.json");
+      const parsedTodos = JSON.parse(todos);
+      req.on("data", (chunk) => {
+        const data = JSON.parse(chunk);
+        const todo = {
+          name: data,
+          id: Math.random(Math.floor() * 1000),
+          done: false,
+        };
+        parsedTodos.push(todo);
+        const stringyFiedTodo = JSON.stringify(parsedTodos, null, 2);
+        writeFile("todos.json", stringyFiedTodo);
+      });
+      res.writeHead(201, {
+        "Content-Type": "application/json",
+        data: "posted sucessfully",
+      });
 
-    res.end();
+      res.end();
+    } catch (err) {
+      console.log(`something went wrong in post ${err}`);
+    }
   } else if (req.method === "DELETE") {
-    const id = req.url.split("/");
-    const parsedId = JSON.parse(id[1]);
-    const todos = readFile("todos.json");
-    const parsedTodos = JSON.parse(todos);
-    const filteredParsedTodos = parsedTodos.filter((todo) => {
-      return todo.id !== parsedId;
-    });
-    const stringyFiedTodo = JSON.stringify(filteredParsedTodos, null, 2);
-    writeFile("todos.json", stringyFiedTodo);
-    res.writeHead(204, {
-      "Content-Type": "application/json",
-      data: "deleted sucessfully",
-    });
+    try {
+      const id = req.url.split("/");
+      const parsedId = JSON.parse(id[1]);
+      const todos = readFile("todos.json");
+      const parsedTodos = JSON.parse(todos);
+      const filteredParsedTodos = parsedTodos.filter((todo) => {
+        return todo.id !== parsedId;
+      });
+      const stringyFiedTodo = JSON.stringify(filteredParsedTodos, null, 2);
+      writeFile("todos.json", stringyFiedTodo);
+      res.writeHead(204, {
+        "Content-Type": "application/json",
+        data: "deleted sucessfully",
+      });
 
-    res.end();
+      res.end();
+    } catch (err) {
+      console.log(`something went wrong in delete post ${err}`);
+    }
   } else if (req.method === "PUT") {
     try {
       const id = req.url.split("/");
@@ -91,7 +106,7 @@ const app = http.createServer((req, res) => {
       });
       todo[0].done = null;
       todo[0].name = "Madri Gale";
-      todo[0].id = Math.random(Math.floor() * 1000);
+      // todo[0].id = Math.random(Math.floor() * 1000);
       console.log(todo);
       filteredTodos.push(todo[0]);
 
@@ -104,35 +119,38 @@ const app = http.createServer((req, res) => {
         data: "updated sucessfully",
       });
     } catch (err) {
-      console.log(`Something went wrong ${err}`);
+      console.log(`Something went wrong  in put ${err}`);
     }
   } else if (req.method === "PATCH") {
-    const id = req.url.split("/");
-    const parsedId = JSON.parse(id[1]);
-    const todos = readFile("todos.json");
-    const parsedTodos = JSON.parse(todos);
+    try {
+      const id = req.url.split("/");
+      const parsedId = JSON.parse(id[1]);
+      const todos = readFile("todos.json");
+      const parsedTodos = JSON.parse(todos);
 
-    let todo = parsedTodos.filter((todo) => {
-      return todo.id === parsedId;
-    });
-    let filteredTodos = parsedTodos.filter((todo) => {
-      return todo.id !== parsedId;
-    });
-    todo[0].done = true;
+      let todo = parsedTodos.filter((todo) => {
+        return todo.id === parsedId;
+      });
+      let filteredTodos = parsedTodos.filter((todo) => {
+        return todo.id !== parsedId;
+      });
+      todo[0].done = true;
 
-    filteredTodos.push(todo[0]);
+      filteredTodos.push(todo[0]);
 
-    stringyFiedTodo = JSON.stringify(filteredTodos, null, 2);
+      stringyFiedTodo = JSON.stringify(filteredTodos, null, 2);
 
-    writeFile("todos.json", stringyFiedTodo);
+      writeFile("todos.json", stringyFiedTodo);
 
-    res.writeHead(204, {
-      "Content-Type": "application/json",
-      data: "updated sucessfully",
-    });
+      res.writeHead(204, {
+        "Content-Type": "application/json",
+        data: "updated sucessfully",
+      });
+      res.end();
+    } catch (err) {
+      console.log(`Something went wrong  in patch ${err}`);
+    }
   }
-
-  res.end();
 });
 
 app.listen(port, () => {
