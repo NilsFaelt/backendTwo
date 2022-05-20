@@ -19,25 +19,24 @@ const app = http.createServer((req, res) => {
 
   if (req.method === "GET" && req.url.split("/")[1] === "singletodo") {
     const id = req.url.split("/");
-    const parsedId = JSON.parse(id[3]);
+    const parsedId = JSON.parse(id[2]);
     const todos = readFile("todos.json");
     const parsedTodos = JSON.parse(todos);
 
     const todo = parsedTodos.filter((todo) => todo.id === parsedId);
     stringyFiedTodo = JSON.stringify(todo);
-    // res.writeHead(200, {
-    //   "Content-Type": "application/json",
-    //   data: "recieved sucessfully",
-    // });
+    res.writeHead(200, {
+      "Content-Type": "application/json",
+      data: "recieved sucessfully",
+    });
 
-    console.log(stringyFiedTodo, "test");
     res.end(stringyFiedTodo);
   } else if (req.method === "GET") {
     const todos = readFile("todos.json");
 
     res.writeHead(200, {
       "Content-Type": "application/json",
-      data: "recieved sucessfully",
+      data: "single todo recieved sucessfully",
     });
 
     res.end(JSON.stringify(todos));
