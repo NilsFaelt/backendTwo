@@ -118,6 +118,7 @@ const app = http.createServer((req, res) => {
         "Content-Type": "application/json",
         data: "updated sucessfully",
       });
+      res.end();
     } catch (err) {
       console.log(`Something went wrong  in put ${err}`);
     }
