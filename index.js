@@ -25,7 +25,7 @@ const app = http.createServer((req, res) => {
       const parsedTodos = JSON.parse(todos);
 
       const todo = parsedTodos.filter((todo) => todo.id === parsedId);
-      stringyFiedTodo = JSON.stringify(todo, null, 2);
+      const stringyFiedTodo = JSON.stringify(todo, null, 2);
       res.writeHead(200, {
         "Content-Type": "application/json",
         data: "single todo recieved sucessfully",
@@ -91,37 +91,6 @@ const app = http.createServer((req, res) => {
     } catch (err) {
       console.log(`something went wrong in delete post ${err}`);
     }
-  } else if (req.method === "PUT") {
-    try {
-      const id = req.url.split("/");
-      const parsedId = JSON.parse(id[1]);
-      const todos = readFile("todos.json");
-      const parsedTodos = JSON.parse(todos);
-
-      let todo = parsedTodos.filter((todo) => {
-        return todo.id === parsedId;
-      });
-      let filteredTodos = parsedTodos.filter((todo) => {
-        return todo.id !== parsedId;
-      });
-      todo[0].done = null;
-      todo[0].name = "Madri Gale";
-      // todo[0].id = Math.random(Math.floor() * 1000);
-      console.log(todo);
-      filteredTodos.push(todo[0]);
-
-      stringyFiedTodo = JSON.stringify(filteredTodos, null, 2);
-
-      writeFile("todos.json", stringyFiedTodo);
-
-      res.writeHead(204, {
-        "Content-Type": "application/json",
-        data: "updated sucessfully",
-      });
-      res.end();
-    } catch (err) {
-      console.log(`Something went wrong  in put ${err}`);
-    }
   } else if (req.method === "PATCH") {
     try {
       const id = req.url.split("/");
@@ -135,19 +104,54 @@ const app = http.createServer((req, res) => {
       let filteredTodos = parsedTodos.filter((todo) => {
         return todo.id !== parsedId;
       });
-      todo[0].done = true;
+      req.on("data", (chunk) => {
+        const data = JSON.parse(chunk);
+        console.log(data);
+        todo[0].name = data.name;
+        filteredTodos.push(todo[0]);
 
-      filteredTodos.push(todo[0]);
+        const stringyFiedTodo = JSON.stringify(filteredTodos, null, 2);
 
-      stringyFiedTodo = JSON.stringify(filteredTodos, null, 2);
+        writeFile("todos.json", stringyFiedTodo);
 
-      writeFile("todos.json", stringyFiedTodo);
-
-      res.writeHead(204, {
-        "Content-Type": "application/json",
-        data: "updated sucessfully",
+        res.writeHead(204, {
+          "Content-Type": "application/json",
+          data: "updated sucessfully",
+        });
+        res.end();
       });
-      res.end();
+    } catch (err) {
+      console.log(`Something went wrong  in put ${err}`);
+    }
+  } else if (req.method === "PUT") {
+    try {
+      const id = req.url.split("/");
+      const parsedId = JSON.parse(id[1]);
+      const todos = readFile("todos.json");
+      const parsedTodos = JSON.parse(todos);
+      let todo = parsedTodos.filter((todo) => {
+        return todo.id === parsedId;
+      });
+      let filteredTodos = parsedTodos.filter((todo) => {
+        return todo.id !== parsedId;
+      });
+      req.on("data", (chunk) => {
+        let data = JSON.parse(chunk);
+        data.id = parsedId;
+        console.log(data);
+
+        filteredTodos.push(data);
+
+        const stringyFiedTodo = JSON.stringify(filteredTodos, null, 2);
+
+        writeFile("todos.json", stringyFiedTodo);
+
+        res.writeHead(204, {
+          "Content-Type": "application/json",
+          data: "updated sucessfully",
+        });
+        res.end();
+      });
     } catch (err) {
       console.log(`Something went wrong  in patch ${err}`);
     }
